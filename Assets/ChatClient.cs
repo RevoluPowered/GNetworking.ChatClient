@@ -87,6 +87,8 @@ namespace Assets
                 }
             }
 
+
+
             // Default first channel as the selected channel.
             CurrentChannel = userInfo.ChatChannels.First();
 
