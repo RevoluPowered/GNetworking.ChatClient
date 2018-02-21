@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Assets;
 using Core.Service;
 using TMPro;
 using UnityEngine;
@@ -20,11 +21,16 @@ public class Computer : MonoBehaviour
     private TextMeshProUGUI screen;
 
     /// <summary>
+    /// Chat client service
+    /// </summary>
+    private ChatClient _chatClient;
+    /// <summary>
     /// Unity Start
     /// </summary>
     void Start()
     {
         screen = GetComponent<TextMeshProUGUI>();
+        _chatClient = GameServiceManager.GetService<ChatClient>();
         screen.text = "";
     }
 
@@ -74,8 +80,9 @@ public class Computer : MonoBehaviour
         var client = GameServiceManager.GetService<NetworkClient>();
         client.MessagePipe.SendReliable("say", new Message
         {
-            Text = message
-            // user will be ignored by server so you can't fake being another user
+            Text = message,
+            ChannelName = _chatClient.CurrentChannel.Name
+            // user field will be ignored by server so you can't fake being another user
         });
     }
 
@@ -83,6 +90,7 @@ public class Computer : MonoBehaviour
     {
         return screen.text.Split('\n');
     }
+
     public void Print(string text)
     {
         var lines = GetLines();
@@ -98,6 +106,12 @@ public class Computer : MonoBehaviour
 
         Debug.Log("line count: " + length);
         screen.text += text + "\n";
+    }
+
+    public void Clear()
+    {
+        // clear the console
+        screen.text = "";
     }
 
     private bool HandleCommand(string[] argumentStrings)
