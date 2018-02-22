@@ -600,7 +600,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5284b3693a075b644b0b092dd82556cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ChannelList: {fileID: 1658426996}
+  ChannelList: {fileID: 2067557319}
   ChannelPrefab: {fileID: 1927703384988042, guid: da1624b486688eb4585bdb7d84b173ac,
     type: 2}
 --- !u!1 &2067557319
