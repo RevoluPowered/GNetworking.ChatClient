@@ -22,15 +22,29 @@ public class Computer : MonoBehaviour
 
     /// <summary>
     /// Chat client service
+    /// -- lazily loaded when needed
     /// </summary>
-    private ChatClient _chatClient;
+    public ChatClient ChatClient
+    {
+        get
+        {
+            if (_chatClient == null)
+            {
+                _chatClient = GameServiceManager.GetService<ChatClient>();
+            }
+            return _chatClient;
+        }
+    }
+
+    protected ChatClient _chatClient;
+    
+
     /// <summary>
     /// Unity Start
     /// </summary>
     void Start()
     {
         screen = GetComponent<TextMeshProUGUI>();
-        _chatClient = GameServiceManager.GetService<ChatClient>();
         screen.text = "";
     }
 
@@ -38,10 +52,7 @@ public class Computer : MonoBehaviour
     /// Backspace available
     /// </summary>
     private int _backspaceAvailable = 0;
-    private int _startingCharacter = 0;
     private string _inputString = "";
-    private const string StartingString = "<color=green>message: </color> ";
-    private Dictionary<string, Func<string[], bool>> _commandAction = new Dictionary<string, Func<string[], bool>>();
     // Update is called once per frame
     void Update()
     {
@@ -60,7 +71,7 @@ public class Computer : MonoBehaviour
             {
                 //Print("\n"+ _inputString);
                 Print("");
-                Say(_inputString);
+                TextEntered(_inputString);
                 
                 _backspaceAvailable = 0;
                 _inputString = "";
@@ -75,15 +86,9 @@ public class Computer : MonoBehaviour
         }
     }
 
-    private void Say(string message)
+    private void TextEntered(string message)
     {
-        var client = GameServiceManager.GetService<NetworkClient>();
-        client.MessagePipe.SendReliable("say", new Message
-        {
-            Text = message,
-            ChannelName = _chatClient.CurrentChannel.Name
-            // user field will be ignored by server so you can't fake being another user
-        });
+        ChatClient.OnUserSubmit(message);
     }
 
     private string[] GetLines()
@@ -112,17 +117,5 @@ public class Computer : MonoBehaviour
     {
         // clear the console
         screen.text = "";
-    }
-
-    private bool HandleCommand(string[] argumentStrings)
-    {
-        if (argumentStrings.Length <= 0) return false;
-        if (_commandAction.ContainsKey(argumentStrings[0]) == false) return false;
-
-        var consoleArguments = argumentStrings.Skip(1).ToArray();
-
-
-
-        return _commandAction[argumentStrings[0]](consoleArguments);
     }
 }
