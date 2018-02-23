@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Text;
 using Core.Service;
 using GNetworking;
 using GNetworking.Data;
@@ -10,6 +12,8 @@ using Serilog;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
+using Object = UnityEngine.Object;
 
 namespace Assets
 {
@@ -21,11 +25,13 @@ namespace Assets
         private GameObject _channelList;
         private GameObject _channelPrefab;
         private List<ChatChannel> _chatChannels = new List<ChatChannel>();
+        private TextMeshProUGUI _userListText;
 
-        public ChatClient( GameObject channelList, GameObject channelPrefab ) : base("Chat Client")
+        public ChatClient( GameObject channelList, GameObject channelPrefab, TextMeshProUGUI userListText ) : base("Chat Client")
         {
             this._channelList = channelList;
             this._channelPrefab = channelPrefab;
+            this._userListText = userListText;
         }
 
         public override void Start()
@@ -40,10 +46,10 @@ namespace Assets
             _networkClient.MessagePipe.On("say", SayMessageReceived);
             _networkClient.MessagePipe.On("UserInfo", SetUserInformation);
             _networkClient.MessagePipe.On("response-nickname-change", OnNicknameChangedResponse);
+            _networkClient.MessagePipe.On("ChannelUpdate", OnChannelUpdate);
             // connect locally
             _networkClient.Connect(IPAddress.Loopback, 27015);
         }
-
 
         public override void Stop()
         {
@@ -74,6 +80,25 @@ namespace Assets
                         _chatTerminal.Print("New nickname: " + parameters);
                         _networkClient.MessagePipe.SendReliable("request-nickname-change", new User(parameters));
                     }
+
+                    if (commands[0] == "/group")
+                    {
+                        _chatTerminal.Print("group requested: " + parameters);
+                        _networkClient.MessagePipe.SendReliable("request-new-group", new ChatChannel
+                        {
+                            Name = parameters
+                        });
+                    }
+
+                    if (commands[0] == "/invite")
+                    {
+                        _chatTerminal.Print("group requested: " + parameters);
+                        _networkClient.MessagePipe.SendReliable("request-invite-user", new UserChannelInvite
+                        {
+                            Nickname = parameters,
+                            ChannelName = CurrentChannel.Name
+                        });
+                    }
                 }
             }
             else
@@ -87,7 +112,7 @@ namespace Assets
             }
         }
 
-        public bool OnNicknameChangedResponse(string name, NetConnection sender, NetPipeMessage msg)
+        private bool OnNicknameChangedResponse(string name, NetConnection sender, NetPipeMessage msg)
         {
             var message = msg.GetMessage<User>();
 
@@ -117,7 +142,7 @@ namespace Assets
         /// <param name="sender">the sender information (server)</param>
         /// <param name="msg">the message which was sent across the network</param>
         /// <returns></returns>
-        public bool SayMessageReceived(string name, NetConnection sender, NetPipeMessage msg)
+        private bool SayMessageReceived(string name, NetConnection sender, NetPipeMessage msg)
         {
             // Retrieve the message
             var chatMessage = msg.GetMessage<Message>();
@@ -140,6 +165,38 @@ namespace Assets
             return true;
         }
 
+        private bool OnChannelUpdate(string name, NetConnection sender, NetPipeMessage msg)
+        {
+            var channel = msg.GetMessage<ChatChannel>();
+
+            if (channel == null) return true; // error
+
+            // check if channel already exists
+            var localChannel = GetChannelByName(channel.Name);
+
+            if (localChannel != null)
+            {
+                localChannel.Participants = channel.Participants;
+
+                // only update visual list if that channel is selected.
+                if (CurrentChannel == localChannel)
+                {
+                    OnChannelUserUpdate(localChannel);
+                }
+            }
+            else
+            {
+                // add channel to list, participants came from server so it is trustworthy.
+                _chatChannels.Add(channel);
+
+                // update the channel list
+                UpdateChannelList(_chatChannels);
+            }
+
+            return false;
+        }
+
+
         /// <summary>
         /// Set User Information - Set's the local user information and the initial nickname the user has.
         /// This is essentially only done when you connect to the server
@@ -148,7 +205,7 @@ namespace Assets
         /// <param name="sender"></param>
         /// <param name="msg"></param>
         /// <returns></returns>
-        public bool SetUserInformation(string name, NetConnection sender, NetPipeMessage msg)
+        private bool SetUserInformation(string name, NetConnection sender, NetPipeMessage msg)
         {
             var userInfo = msg.GetMessage<UserInfoMessage>();
 
@@ -164,15 +221,40 @@ namespace Assets
                 }
             }
 
-
-
             // Default first channel as the selected channel.
             CurrentChannel = userInfo.ChatChannels.First();
             _chatChannels = userInfo.ChatChannels;
-            
-            // populate channel list
-            foreach (var channel in userInfo.ChatChannels)
+
+            // update the channel list
+            UpdateChannelList(_chatChannels);
+
+
+            // set default to be current channel and load chat history
+            OnChannelSet(CurrentChannel);
+
+            _chatTerminal.Print("My nickname is: " + userInfo.UserData.Nickname + ", to change it type /nickname yournickname");
+
+
+            return true;
+        }
+
+        /// <summary>
+        /// Update the channel list
+        /// </summary>
+        /// <param name="channels">list of the channels</param>
+        void UpdateChannelList( List<ChatChannel> channels )
+        {
+            Debug.Log("Init channel..." + channels.Count);
+            // clear the existing list
+            foreach (Transform trans in _channelList.transform)
             {
+                GameObject.Destroy(trans.gameObject);
+            }
+
+            // populate channel list
+            foreach (var channel in channels)
+            {
+                Debug.Log("Adding channel...");
                 var go = Object.Instantiate(_channelPrefab, _channelList.transform, false);
                 var button = go.GetComponent<Button>();
                 var uiChannelLink = go.AddComponent<ChannelUILink>();
@@ -184,30 +266,38 @@ namespace Assets
                 // event handler assignment -> with data pre-attached on call.
                 button.onClick.AddListener(delegate { OnChannelSet(channel); });
             }
-
-            // set default to be current channel and load chat history
-            OnChannelSet(CurrentChannel);
-
-            _chatTerminal.Print("My nickname is: " + userInfo.UserData.Nickname + ", to change it type /nickname yournickname");
-
-
-            return true;
         }
 
 
-        void OnChannelSet(ChatChannel Channel)
+        void OnChannelSet(ChatChannel chatChannel)
         {
             Debug.Log("Channel Changed");
-            CurrentChannel = Channel;
+            CurrentChannel = chatChannel;
 
             // Clear Console
             _chatTerminal.Clear();
 
             // Output all the messages which have been sent to this channel
-            foreach (var message in Channel.Messages)
+            foreach (var message in chatChannel.Messages)
             {
                 _chatTerminal.Print(message.User.Nickname + ": " + message.Text);
             }
+
+            // update online user list
+            OnChannelUserUpdate(chatChannel);
+        }
+
+        void OnChannelUserUpdate(ChatChannel channel)
+        {
+            // update online users list
+            var stringBuilder = new StringBuilder();
+            foreach (var participant in CurrentChannel.Participants)
+            {
+                stringBuilder.Append(participant.Nickname + "\n");
+            }
+
+            // update ui text
+            _userListText.text = stringBuilder.ToString();
         }
 
         void OnConnected()

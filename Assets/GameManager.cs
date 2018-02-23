@@ -31,11 +31,12 @@ namespace Assets
     {
         public GameObject ChannelList;
         public GameObject ChannelPrefab;
+        public TextMeshProUGUI UserList;
 
         void Awake()
         {
             GameServiceManager.RegisterService(new NetworkClient());
-            GameServiceManager.RegisterService(new ChatClient(ChannelList, ChannelPrefab));
+            GameServiceManager.RegisterService(new ChatClient(ChannelList, ChannelPrefab, UserList));
             GameServiceManager.StartServices();
         }
 
