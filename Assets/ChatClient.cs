@@ -207,17 +207,8 @@ namespace Assets
             // this can be null if someone is sending data which is erroneous or they're sending the wrong arguments
             if (chatMessage == null) return false;
 
-            // filter emoticons into text properly
-            chatMessage.Text = _emoticonHandler.ConvertString(chatMessage.Text);
-
-            // filter _badWords out if this enabled
-            if (_configHandler.GetConfiguration().FilterBadWords)
-            {
-                Debug.LogError("Filtering bad words");
-                
-            chatMessage.Text = _badWordHandler.Filter(chatMessage.Text);
-            }
-
+            // filter text - bad words, smiley conversion
+            chatMessage.Text = FilterHandler(chatMessage.Text);
 
             // message is for other channel
             if (chatMessage.ChannelName == CurrentChannel.Name)
@@ -233,6 +224,34 @@ namespace Assets
             Debug.Log("Nickname said: " + chatMessage.Text);
             return true;
         }
+
+        /// <summary>
+        /// Filter handler
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        private string FilterHandler( string input )
+        {
+            // filter emoticons into text properly
+            input = _emoticonHandler.ConvertString(input);
+
+            // filter _badWords out if this enabled
+            if (_configHandler.GetConfiguration().FilterBadWords)
+            {
+                input = _badWordHandler.Filter(input);
+            }
+
+            return input;
+        }
+
+        private void FilterChannel(ChatChannel channel)
+        {
+            foreach (var message in channel.Messages)
+            {
+                message.Text = FilterHandler(message.Text);
+            }
+        }
+
 
         private bool OnChannelUpdate(string name, NetConnection sender, NetPipeMessage msg)
         {
@@ -335,6 +354,9 @@ namespace Assets
 
             // Clear Console
             _chatTerminal.Clear();
+
+            // filter current channel
+            FilterChannel(CurrentChannel);
 
             // Output all the messages which have been sent to this channel
             foreach (var message in chatChannel.Messages)
