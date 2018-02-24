@@ -25,8 +25,8 @@ MonoBehaviour:
     yOffset: 128
     xAdvance: 128
     scale: 1
-    name: :)
-    hashCode: 1875
+    name: happy
+    hashCode: 119970384
     unicode: 128522
     pivot: {x: 0.5, y: 0.5}
     sprite: {fileID: 0}
@@ -39,8 +39,8 @@ MonoBehaviour:
     yOffset: 128
     xAdvance: 128
     scale: 1
-    name: :P
-    hashCode: 1834
+    name: tongue
+    hashCode: 135560098
     unicode: 128523
     pivot: {x: 0.5, y: 0.5}
     sprite: {fileID: 0}
@@ -53,8 +53,8 @@ MonoBehaviour:
     yOffset: 128
     xAdvance: 128
     scale: 1
-    name: <3
-    hashCode: 1935
+    name: love
+    hashCode: 3764304
     unicode: 128525
     pivot: {x: 0.5, y: 0.5}
     sprite: {fileID: 0}
@@ -95,8 +95,8 @@ MonoBehaviour:
     yOffset: 128
     xAdvance: 128
     scale: 1
-    name: =D
-    hashCode: 1945
+    name: openhappy
+    hashCode: 1439653892
     unicode: 128512
     pivot: {x: 0.5, y: 0.5}
     sprite: {fileID: 0}
@@ -179,8 +179,8 @@ MonoBehaviour:
     yOffset: 128
     xAdvance: 128
     scale: 1
-    name: ;)
-    hashCode: 1970
+    name: winky
+    hashCode: 140109858
     unicode: 128521
     pivot: {x: 0.5, y: 0.5}
     sprite: {fileID: 0}
@@ -235,8 +235,8 @@ MonoBehaviour:
     yOffset: 128
     xAdvance: 128
     scale: 1
-    name: :(
-    hashCode: 1874
+    name: sadface
+    hashCode: 1088022839
     unicode: 9785
     pivot: {x: 0.5, y: 0.5}
     sprite: {fileID: 0}

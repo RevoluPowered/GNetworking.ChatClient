@@ -353,7 +353,7 @@ namespace Assets
             // set default to be current channel and load chat history
             OnChannelSet(CurrentChannel);
 
-            _chatTerminal.Print("My nickname is: " + userInfo.UserData.Nickname + ", to change it type /nickname yournickname");
+            _chatTerminal.Print("My nickname is: " + userInfo.UserData.Nickname + ", to change it type /nickname yournickname also /help shows you a list of commands.");
 
 
             return true;

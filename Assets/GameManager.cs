@@ -33,6 +33,9 @@ namespace Assets
         public GameObject ChannelPrefab;
         public TextMeshProUGUI UserList;
 
+        /// <summary>
+        /// Unity Awake
+        /// </summary>
         void Awake()
         {
             GameServiceManager.RegisterService(new ConfigHandler());
@@ -40,15 +43,31 @@ namespace Assets
             GameServiceManager.RegisterService(new ChatClient(this, ChannelList, ChannelPrefab, UserList));
             GameServiceManager.StartServices();
         }
-
+        
+        /// <summary>
+        /// Unity Fixed Update
+        /// </summary>
         void FixedUpdate()
         {
+            // Update all game services
             GameServiceManager.UpdateServices();
         }
 
+        /// <summary>
+        /// Unity Application Quit
+        /// </summary>
         void OnApplicationQuit()
         {
+            // Stop all game services and shutdown gracefully.
             GameServiceManager.StopServices();
+        }
+
+        /// <summary>
+        /// Unity UI quit button
+        /// </summary>
+        public void QuitButton()
+        {
+            Application.Quit();
         }
     }
 }
