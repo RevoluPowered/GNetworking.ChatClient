@@ -22,6 +22,8 @@ namespace Assets
     public class ChatClient : GameService
     {
         public ChatChannel CurrentChannel = null;
+        public User LocalUser;
+
         private Computer _chatTerminal = null;
         private NetworkClient _networkClient;
         private GameObject _channelList;
@@ -32,7 +34,6 @@ namespace Assets
         private ConfigHandler _configHandler;
         private EmoticonHandler _emoticonHandler;
         private BadWordHandler _badWordHandler;
-        
         public ChatClient( GameManager manager, GameObject channelList, GameObject channelPrefab, TextMeshProUGUI userListText ) : base("Chat Client")
         {
             this._channelList = channelList;
@@ -54,8 +55,8 @@ namespace Assets
             // register network data function for the message type
             _networkClient.MessagePipe.On("say", SayMessageReceived);
             _networkClient.MessagePipe.On("UserInfo", SetUserInformation);
-            _networkClient.MessagePipe.On("response-nickname-change", OnNicknameChangedResponse);
             _networkClient.MessagePipe.On("ChannelUpdate", OnChannelUpdate);
+            _networkClient.MessagePipe.On("OnServerNotification", OnServerNotification);
 
             // Connect
             Connect();
@@ -127,27 +128,40 @@ namespace Assets
             {
                 string[] commands = messageSubmitted.Split(' ');
 
+
+                if (commands.Length >= 1)
+                {
+                    if (commands[0] == "/help")
+                    {
+                        _chatTerminal.Print(
+                            "help\tThe following commands are available:</b>\n" +
+                            "\tnote: you can have as many groups as you want\n" +
+                            "\tyou can change group with the buttons at the top\n" +
+                            "<b>/group FEDS</b> \t\t Make a new group to invite private members to your group.\n" +
+                            "<b>/invite bobmarley</b> \t Invite a user to a group chat\n" +
+                            "<b>/nickname bobmarley</b> \t Change your nickname to bobmarley\n");
+                    }
+                }
+
                 if (commands.Length >= 2)
                 {
                     var parameters = string.Join(" ", commands.Skip(1));
                     if (commands[0] == "/nickname")
                     {
-                        _chatTerminal.Print("New nickname: " + parameters);
+                        //_chatTerminal.Print("New nickname: " + parameters);
                         _networkClient.MessagePipe.SendReliable("request-nickname-change", new User(parameters));
                     }
-
-                    if (commands[0] == "/group")
+                    else if (commands[0] == "/group")
                     {
-                        _chatTerminal.Print("group requested: " + parameters);
+                        //_chatTerminal.Print("group requested: " + parameters);
                         _networkClient.MessagePipe.SendReliable("request-new-group", new ChatChannel
                         {
                             Name = parameters
                         });
                     }
-
-                    if (commands[0] == "/invite")
+                    else if (commands[0] == "/invite")
                     {
-                        _chatTerminal.Print("group requested: " + parameters);
+                        //_chatTerminal.Print("group requested: " + parameters);
                         _networkClient.MessagePipe.SendReliable("request-invite-user", new UserChannelInvite
                         {
                             Nickname = parameters,
@@ -167,13 +181,20 @@ namespace Assets
             }
         }
 
-        private bool OnNicknameChangedResponse(string name, NetConnection sender, NetPipeMessage msg)
+        /// <summary>
+        /// On Nickname Response
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="sender"></param>
+        /// <param name="msg"></param>
+        /// <returns></returns>
+        private bool OnServerNotification(string name, NetConnection sender, NetPipeMessage msg)
         {
-            var message = msg.GetMessage<User>();
+            var message = msg.GetMessage<Message>();
 
             if (message != null)
             {
-                _chatTerminal.Print("My nickname is now: " + message.Nickname);
+                _chatTerminal.Print("[server] " + message.Text);
             }
 
             return true;
@@ -181,7 +202,7 @@ namespace Assets
 
 
         /// <summary>
-        /// Get channel by name
+        /// Find ChatChannel by name
         /// </summary>
         /// <param name="channelName"></param>
         /// <returns></returns>
@@ -226,7 +247,8 @@ namespace Assets
         }
 
         /// <summary>
-        /// Filter handler
+        /// Called when a string needs filtered based on the current config settings
+        /// E.G. Bad word filtering, emoticon code conversion
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
@@ -244,15 +266,34 @@ namespace Assets
             return input;
         }
 
+        /// <summary>
+        /// Filter channel, filters entire channel data when requested
+        /// </summary>
+        /// <param name="channel"></param>
         private void FilterChannel(ChatChannel channel)
         {
+            // order list properly by time sent noteworthy that this value is trusted by the client, so that needs improved.
+            // people might game the history potentially, therefore the client.log is the most valid representation of 
+            // chat history past 10 messages.
+            channel.Messages = channel.Messages.OrderBy(m => m.Timestamp.TimeOfDay).ToList();
+            
+            // maximum data points retrieved should be 10
+            channel.Messages = channel.Messages.Skip(Math.Max(0, channel.Messages.Count() - 10)).ToList();
+
             foreach (var message in channel.Messages)
             {
                 message.Text = FilterHandler(message.Text);
             }
         }
 
-
+        /// <summary>
+        /// OnChannelUpdate Network Handler
+        /// Called when something changes in a channel, this is only executed on the clients.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="sender"></param>
+        /// <param name="msg"></param>
+        /// <returns></returns>
         private bool OnChannelUpdate(string name, NetConnection sender, NetPipeMessage msg)
         {
             var channel = msg.GetMessage<ChatChannel>();
@@ -306,6 +347,8 @@ namespace Assets
             // update the channel list
             UpdateChannelList(_chatChannels);
 
+            // assign current user as default
+            LocalUser = userInfo.UserData;
 
             // set default to be current channel and load chat history
             OnChannelSet(CurrentChannel);

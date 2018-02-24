@@ -12,6 +12,9 @@ namespace Assets
 
         }
 
+        /// <summary>
+        /// List of bad words.
+        /// </summary>
         private readonly List<string> _badWords = new List<string>()
         {
             "anal",
