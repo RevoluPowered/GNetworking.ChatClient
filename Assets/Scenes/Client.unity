@@ -980,6 +980,7 @@ MonoBehaviour:
   ChannelPrefab: {fileID: 1927703384988042, guid: da1624b486688eb4585bdb7d84b173ac,
     type: 2}
   UserList: {fileID: 1065603623}
+  BadWordList: {fileID: 4900000, guid: 35c1a42e4c15ad64ca849a7b1268f1cd, type: 3}
 --- !u!1 &2067557319
 GameObject:
   m_ObjectHideFlags: 0

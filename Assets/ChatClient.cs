@@ -31,6 +31,8 @@ namespace Assets
         private GameManager _manager;
         private ConfigHandler _configHandler;
         private EmoticonHandler _emoticonHandler;
+        private BadWordHandler _badWordHandler;
+        
         public ChatClient( GameManager manager, GameObject channelList, GameObject channelPrefab, TextMeshProUGUI userListText ) : base("Chat Client")
         {
             this._channelList = channelList;
@@ -41,6 +43,7 @@ namespace Assets
 
         public override void Start()
         {
+            _badWordHandler = new BadWordHandler();
             _emoticonHandler = new EmoticonHandler();
             _chatTerminal = Object.FindObjectOfType<Computer>();
             _networkClient = GameServiceManager.GetService<NetworkClient>();
@@ -187,6 +190,8 @@ namespace Assets
             return _chatChannels.Find(c => c.Name == channelName);
         }
 
+        
+
         /// <summary>
         /// Say Message Handler - When server tells us someone has sent a message.
         /// </summary>
@@ -204,6 +209,15 @@ namespace Assets
 
             // filter emoticons into text properly
             chatMessage.Text = _emoticonHandler.ConvertString(chatMessage.Text);
+
+            // filter _badWords out if this enabled
+            if (_configHandler.GetConfiguration().FilterBadWords)
+            {
+                Debug.LogError("Filtering bad words");
+                
+            chatMessage.Text = _badWordHandler.Filter(chatMessage.Text);
+            }
+
 
             // message is for other channel
             if (chatMessage.ChannelName == CurrentChannel.Name)
