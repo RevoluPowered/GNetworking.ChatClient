@@ -1,55 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!21 &2103686
-Material:
-  serializedVersion: 6
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_Name: TextMeshPro/Sprite
-  m_Shader: {fileID: 4800000, guid: 3a1c68c8292caf046bd21158886c5e40, type: 3}
-  m_ShaderKeywords: 
-  m_LightmapFlags: 5
-  m_CustomRenderQueue: -1
-  stringTagMap: {}
-  m_SavedProperties:
-    serializedVersion: 2
-    m_TexEnvs:
-    - first:
-        name: _MainTex
-      second:
-        m_Texture: {fileID: 2800000, guid: 6ec706981a919c3489f0b061a40054e2, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    m_Floats:
-    - first:
-        name: _ColorMask
-      second: 15
-    - first:
-        name: _Stencil
-      second: 0
-    - first:
-        name: _StencilComp
-      second: 8
-    - first:
-        name: _StencilOp
-      second: 0
-    - first:
-        name: _StencilReadMask
-      second: 255
-    - first:
-        name: _StencilWriteMask
-      second: 255
-    - first:
-        name: _UseUIAlphaClip
-      second: 0
-    m_Colors:
-    - first:
-        name: _ClipRect
-      second: {r: -32767, g: -32767, b: 32767, a: 32767}
-    - first:
-        name: _Color
-      second: {r: 1, g: 1, b: 1, a: 1}
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -62,7 +12,7 @@ MonoBehaviour:
   m_Name: EmojiOne
   m_EditorClassIdentifier: 
   hashCode: -1836805472
-  material: {fileID: 2103686}
+  material: {fileID: 21618894061223200}
   materialHashCode: 0
   spriteSheet: {fileID: 2800000, guid: 6ec706981a919c3489f0b061a40054e2, type: 3}
   spriteInfoList:
@@ -72,11 +22,11 @@ MonoBehaviour:
     width: 128
     height: 128
     xOffset: 0
-    yOffset: 115.6
+    yOffset: 128
     xAdvance: 128
     scale: 1
-    name: 1f60a
-    hashCode: 57188336
+    name: :)
+    hashCode: 1875
     unicode: 128522
     pivot: {x: 0.5, y: 0.5}
     sprite: {fileID: 0}
@@ -86,11 +36,11 @@ MonoBehaviour:
     width: 128
     height: 128
     xOffset: 0
-    yOffset: 115.6
+    yOffset: 128
     xAdvance: 128
     scale: 1
-    name: 1f60b
-    hashCode: 57188339
+    name: :P
+    hashCode: 1834
     unicode: 128523
     pivot: {x: 0.5, y: 0.5}
     sprite: {fileID: 0}
@@ -100,11 +50,11 @@ MonoBehaviour:
     width: 128
     height: 128
     xOffset: 0
-    yOffset: 115.6
+    yOffset: 128
     xAdvance: 128
     scale: 1
-    name: 1f60d
-    hashCode: 57188341
+    name: <3
+    hashCode: 1935
     unicode: 128525
     pivot: {x: 0.5, y: 0.5}
     sprite: {fileID: 0}
@@ -114,40 +64,40 @@ MonoBehaviour:
     width: 128
     height: 128
     xOffset: 0
-    yOffset: 115.6
+    yOffset: 128
     xAdvance: 128
     scale: 1
-    name: 1f60e
-    hashCode: 57188340
+    name: :B
+    hashCode: 1848
     unicode: 128526
     pivot: {x: 0.5, y: 0.5}
     sprite: {fileID: 0}
   - id: 4
-    x: 0
-    y: 256
-    width: 128
-    height: 128
-    xOffset: 0
-    yOffset: 115.6
-    xAdvance: 128
-    scale: 1
-    name: 1f600
-    hashCode: 57188257
-    unicode: 128512
-    pivot: {x: 0.5, y: 0.5}
-    sprite: {fileID: 0}
-  - id: 5
     x: 128
     y: 256
     width: 128
     height: 128
     xOffset: 0
-    yOffset: 115.6
+    yOffset: 128
     xAdvance: 128
     scale: 1
-    name: 1f601
-    hashCode: 57188256
+    name: =+)
+    hashCode: 67231
     unicode: 128513
+    pivot: {x: 0.5, y: 0.5}
+    sprite: {fileID: 0}
+  - id: 5
+    x: 0
+    y: 256
+    width: 128
+    height: 128
+    xOffset: 0
+    yOffset: 128
+    xAdvance: 128
+    scale: 1
+    name: =D
+    hashCode: 1945
+    unicode: 128512
     pivot: {x: 0.5, y: 0.5}
     sprite: {fileID: 0}
   - id: 6
@@ -156,11 +106,11 @@ MonoBehaviour:
     width: 128
     height: 128
     xOffset: 0
-    yOffset: 115.6
+    yOffset: 128
     xAdvance: 128
     scale: 1
-    name: 1f602
-    hashCode: 57188259
+    name: ;)
+    hashCode: 1970
     unicode: 128514
     pivot: {x: 0.5, y: 0.5}
     sprite: {fileID: 0}
@@ -170,11 +120,11 @@ MonoBehaviour:
     width: 128
     height: 128
     xOffset: 0
-    yOffset: 115.6
+    yOffset: 128
     xAdvance: 128
     scale: 1
-    name: 1f603
-    hashCode: 57188258
+    name: :D
+    hashCode: 1854
     unicode: 128515
     pivot: {x: 0.5, y: 0.5}
     sprite: {fileID: 0}
@@ -184,11 +134,11 @@ MonoBehaviour:
     width: 128
     height: 128
     xOffset: 0
-    yOffset: 115.6
+    yOffset: 128
     xAdvance: 128
     scale: 1
-    name: 1f604
-    hashCode: 57188261
+    name: ;D
+    hashCode: 2015
     unicode: 128516
     pivot: {x: 0.5, y: 0.5}
     sprite: {fileID: 0}
@@ -198,11 +148,11 @@ MonoBehaviour:
     width: 128
     height: 128
     xOffset: 0
-    yOffset: 115.6
+    yOffset: 128
     xAdvance: 128
     scale: 1
-    name: 1f605
-    hashCode: 57188260
+    name: ;.D
+    hashCode: 65041
     unicode: 128517
     pivot: {x: 0.5, y: 0.5}
     sprite: {fileID: 0}
@@ -212,11 +162,11 @@ MonoBehaviour:
     width: 128
     height: 128
     xOffset: 0
-    yOffset: 115.6
+    yOffset: 128
     xAdvance: 128
     scale: 1
-    name: 1f606
-    hashCode: 57188263
+    name: -_-
+    hashCode: 47103
     unicode: 128518
     pivot: {x: 0.5, y: 0.5}
     sprite: {fileID: 0}
@@ -226,11 +176,11 @@ MonoBehaviour:
     width: 128
     height: 128
     xOffset: 0
-    yOffset: 115.6
+    yOffset: 128
     xAdvance: 128
     scale: 1
-    name: 1f609
-    hashCode: 57188264
+    name: ;)
+    hashCode: 1970
     unicode: 128521
     pivot: {x: 0.5, y: 0.5}
     sprite: {fileID: 0}
@@ -240,11 +190,11 @@ MonoBehaviour:
     width: 128
     height: 128
     xOffset: 0
-    yOffset: 115.6
+    yOffset: 128
     xAdvance: 128
     scale: 1
-    name: 1f618
-    hashCode: 57188168
+    name: <3
+    hashCode: 1935
     unicode: 128536
     pivot: {x: 0.5, y: 0.5}
     sprite: {fileID: 0}
@@ -254,11 +204,11 @@ MonoBehaviour:
     width: 128
     height: 128
     xOffset: 0
-    yOffset: 115.6
+    yOffset: 128
     xAdvance: 128
     scale: 1
-    name: 1f923
-    hashCode: 57200239
+    name: :o
+    hashCode: 1813
     unicode: 129315
     pivot: {x: 0.5, y: 0.5}
     sprite: {fileID: 0}
@@ -268,11 +218,11 @@ MonoBehaviour:
     width: 128
     height: 128
     xOffset: 0
-    yOffset: 115.6
+    yOffset: 128
     xAdvance: 128
     scale: 1
-    name: 263a
-    hashCode: 1748406
+    name: =]
+    hashCode: 1920
     unicode: 9786
     pivot: {x: 0.5, y: 0.5}
     sprite: {fileID: 0}
@@ -282,16 +232,16 @@ MonoBehaviour:
     width: 128
     height: 128
     xOffset: 0
-    yOffset: 115.6
+    yOffset: 128
     xAdvance: 128
     scale: 1
-    name: 2639
-    hashCode: 1748462
+    name: :(
+    hashCode: 1874
     unicode: 9785
     pivot: {x: 0.5, y: 0.5}
     sprite: {fileID: 0}
   fallbackSpriteAssets: []
---- !u!21 &1369835458
+--- !u!21 &21618894061223200
 Material:
   serializedVersion: 6
   m_ObjectHideFlags: 1
@@ -300,11 +250,27 @@ Material:
   m_Name: TextMeshPro/Sprite
   m_Shader: {fileID: 4800000, guid: 3a1c68c8292caf046bd21158886c5e40, type: 3}
   m_ShaderKeywords: 
-  m_LightmapFlags: 5
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
   stringTagMap: {}
+  disabledShaderPasses: []
   m_SavedProperties:
-    serializedVersion: 2
-    m_TexEnvs: []
-    m_Floats: []
-    m_Colors: []
+    serializedVersion: 3
+    m_TexEnvs:
+    - _MainTex:
+        m_Texture: {fileID: 2800000, guid: 6ec706981a919c3489f0b061a40054e2, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - _ColorMask: 15
+    - _Stencil: 0
+    - _StencilComp: 8
+    - _StencilOp: 0
+    - _StencilReadMask: 255
+    - _StencilWriteMask: 255
+    - _UseUIAlphaClip: 0
+    m_Colors:
+    - _ClipRect: {r: -32767, g: -32767, b: 32767, a: 32767}
+    - _Color: {r: 1, g: 1, b: 1, a: 1}

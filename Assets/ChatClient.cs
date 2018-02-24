@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Threading.Tasks;
 using Core.Service;
 using GNetworking;
 using GNetworking.Data;
@@ -26,19 +28,23 @@ namespace Assets
         private GameObject _channelPrefab;
         private List<ChatChannel> _chatChannels = new List<ChatChannel>();
         private TextMeshProUGUI _userListText;
-
-        public ChatClient( GameObject channelList, GameObject channelPrefab, TextMeshProUGUI userListText ) : base("Chat Client")
+        private GameManager _manager;
+        private ConfigHandler _configHandler;
+        private EmoticonHandler _emoticonHandler;
+        public ChatClient( GameManager manager, GameObject channelList, GameObject channelPrefab, TextMeshProUGUI userListText ) : base("Chat Client")
         {
             this._channelList = channelList;
             this._channelPrefab = channelPrefab;
             this._userListText = userListText;
+            this._manager = manager;
         }
 
         public override void Start()
         {
+            _emoticonHandler = new EmoticonHandler();
             _chatTerminal = Object.FindObjectOfType<Computer>();
             _networkClient = GameServiceManager.GetService<NetworkClient>();
-
+            _configHandler = GameServiceManager.GetService<ConfigHandler>();
             _networkClient.OnClientConnectionSuccessful += OnConnected;
             _networkClient.OnClientDisconnected += OnDisconnected;
 
@@ -47,9 +53,55 @@ namespace Assets
             _networkClient.MessagePipe.On("UserInfo", SetUserInformation);
             _networkClient.MessagePipe.On("response-nickname-change", OnNicknameChangedResponse);
             _networkClient.MessagePipe.On("ChannelUpdate", OnChannelUpdate);
-            // connect locally
-            _networkClient.Connect(IPAddress.Loopback, 27015);
+
+            // Connect
+            Connect();
         }
+
+        /// <summary>
+        /// Connect to server
+        /// </summary>
+        private void Connect()
+        {
+            var config = _configHandler.GetConfiguration();
+            _networkClient.Connect(IPAddress.Parse(config.ServerAddress), config.ServerPort);
+        }
+
+        /// <summary>
+        /// The server address
+        /// </summary>
+        private IPAddress serverAddress = IPAddress.Loopback;
+
+        private bool reconnecting = false;
+        /// <summary>
+        /// Attempt reconnection
+        /// </summary>
+        public IEnumerator AttemptReconnection()
+        {
+            if (reconnecting) yield break;
+            reconnecting = true; // start reconnecting
+
+            var retryCount = 10;
+            while (_networkClient.NetworkSocket.ConnectionStatus != NetConnectionStatus.Connected && retryCount > 0)
+            {
+                _chatTerminal.Print("Retrying connection to server... retries left: " + retryCount);
+                Connect();
+
+                yield return new WaitForSeconds(3.0f);
+
+                if (_networkClient.NetworkSocket.ConnectionStatus != NetConnectionStatus.Connected)
+                {
+                    retryCount--;
+                }
+                else
+                {
+                    reconnecting = false;
+                }
+            }
+
+            reconnecting = false;
+        }
+        
 
         public override void Stop()
         {
@@ -150,6 +202,9 @@ namespace Assets
             // this can be null if someone is sending data which is erroneous or they're sending the wrong arguments
             if (chatMessage == null) return false;
 
+            // filter emoticons into text properly
+            chatMessage.Text = _emoticonHandler.ConvertString(chatMessage.Text);
+
             // message is for other channel
             if (chatMessage.ChannelName == CurrentChannel.Name)
             {
@@ -210,16 +265,6 @@ namespace Assets
             var userInfo = msg.GetMessage<UserInfoMessage>();
 
             if (userInfo == null) return false;
-           
-            // clear list of channels
-            foreach (var transform in _channelList.GetComponentsInChildren<Transform>(true))
-            {
-                if (_channelList.transform == transform) continue;
-                if (transform.gameObject != null)
-                {
-                    Object.Destroy(transform);
-                }
-            }
 
             // Default first channel as the selected channel.
             CurrentChannel = userInfo.ChatChannels.First();
@@ -310,7 +355,9 @@ namespace Assets
         {
             Log.Information("Connection disconnected");
             _chatTerminal.Print("Disconnected from the server.");
+            _manager.StartCoroutine(AttemptReconnection());
         }
+
 
         public override void Update()
         {

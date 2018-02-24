@@ -117,5 +117,10 @@ public class Computer : MonoBehaviour
     {
         // clear the console
         screen.text = "";
+
+        /*for (int x = 0; x < 20; x++)
+        {
+            screen.text += "number " + x + "<sprite=" + x + ">\n";
+        }*/
     }
 }

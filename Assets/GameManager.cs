@@ -35,8 +35,9 @@ namespace Assets
 
         void Awake()
         {
+            GameServiceManager.RegisterService(new ConfigHandler());
             GameServiceManager.RegisterService(new NetworkClient());
-            GameServiceManager.RegisterService(new ChatClient(ChannelList, ChannelPrefab, UserList));
+            GameServiceManager.RegisterService(new ChatClient(this, ChannelList, ChannelPrefab, UserList));
             GameServiceManager.StartServices();
         }
 
