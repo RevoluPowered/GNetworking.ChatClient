@@ -39,6 +39,7 @@ namespace Assets
         private ConfigHandler _configHandler;
         private EmoticonHandler _emoticonHandler;
         private BadWordHandler _badWordHandler;
+        
         public ChatClient( GameManager manager, GameObject channelList, GameObject channelPrefab, TextMeshProUGUI userListText ) : base("Chat Client")
         {
             this._channelList = channelList;
